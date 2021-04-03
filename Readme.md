@@ -28,7 +28,8 @@
 - https://mastergroosha.github.io/telegram-tutorial/docs/lesson_01/
 - https://pypi.org/project/pyTelegramBotAPI/0.3.0/
 - https://python-telegram-bot.readthedocs.io/en/stable/telegram.bot.html
+- https://www.knowledgehut.com/blog/programming/sys-argv-python-examples
 
 ## Библиотеки
-- pip install pyTelegramBotAPI requests
+- pip install pyTelegramBotAPI requests auto-py-to-exe
 
