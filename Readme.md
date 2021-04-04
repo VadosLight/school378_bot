@@ -12,7 +12,7 @@
 ### Инструкция
 
 1) Запустить server(py/exe) на сервере, на адрес которого смогут делать запрос клиенты. (Внешний ip или единая локальная сеть)
-2) Поместить на нужные ПК программу (dataCollector.exe и Ярлык с параметрами) параметры вида "TOKEN" "BOT_ID" "SERVER_IP:PORT"
+2) Поместить на нужные ПК скрипт/утилиту (dataCollector.exe и Ярлык с параметрами) параметры вида "TOKEN" "BOT_ID" "SERVER_IP:PORT"
     - (Windows) Поле Target ярлыка должно содержать %windir%\system32\cmd.exe /C start .\dataCollector.exe "TOKEN" "BOT_ID" "SERVER_IP:PORT"
     - (Linux) Ярлык не требуется. Запускаем сам исполняемый файл с параметрами "TOKEN" "BOT_ID" "SERVER_IP:PORT"
 3) Добавить в планировщик задач ссылку на ЯРЛЫК (Windows) или Исполняемый файл (Linux)
