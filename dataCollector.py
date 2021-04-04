@@ -62,7 +62,7 @@ class DataCollector:
 # sys.argv[0] - это название файла
 # адрес сервера встроить в код или принимать аргументом
 if __name__ == "__main__":
-    if (len(sys.argv) == 3):
+    if (len(sys.argv) == 4):
         args = Args(sys.argv[1], sys.argv[2])
         print(args.token, args.chatId)
         if(args.isCorrectArgs()):
@@ -73,8 +73,8 @@ if __name__ == "__main__":
             obj.bot_id = sys.argv[2]
             x = json.dumps(obj.__dict__)
             # Принимать ещё одним аргуменотм?
-            requests.post('http://188.134.69.199:8000', json=x)
+            requests.post(sys.argv[3], json=x)
         else:
-            print("Incorrect arguments. Remember, TOKEN is first")
+            print("Incorrect arguments. Remember, TOKEN - ID - IP ...")
     else:
         print("Incorrect number of arguments")
