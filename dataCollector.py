@@ -2,6 +2,7 @@ import os
 import sys
 import requests
 import json
+import ssd
 
 import getpass
 import socket
@@ -75,10 +76,20 @@ class DataCollector:
     @staticmethod
     def disksInfo(self):
         tmp = ""
+        type_drive = ""
         disks = psutil.disk_partitions(all=True)
         for d in disks:
-            tmp += f';{d.device}{self.diskCapacity(d.device)}'
-            # print(f'{d.device}{self.diskCapacity(d.device)};')
+            disk_name = d.device.replace("\\", "/")
+            try:
+                if ssd.is_ssd(disk_name):
+                    type_drive = "SSD"
+                else:
+                    type_drive = "HDD"
+            except:
+                type_drive = "Not defined"
+
+            tmp += f';{disk_name}_{type_drive}_{self.diskCapacity(disk_name)}'
+            print(f';{disk_name}_{type_drive}_{self.diskCapacity(disk_name)}')
         return tmp
 
     # Вспомогательный метод для
@@ -89,7 +100,7 @@ class DataCollector:
             disk_C_total_GB = round(disk_C[0]/1024/1024/1024)
             disk_C_free_GB = round(disk_C[2]/1024/1024/1024)
             disk_C_percent = disk_C[3]
-            info_C = f'/{disk_C_free_GB}_GB free of {disk_C_total_GB}_GB Usage_%:{disk_C_percent}'
+            info_C = f'{disk_C_free_GB}_GB free of {disk_C_total_GB}_GB Usage_%:{disk_C_percent}'
             return info_C
         except:
             return " Disk is unavailable"
