@@ -16,6 +16,7 @@ def decodedDataToMessage(data):
     jsonData = json.dumps(data)
     jsonData = jsonData[1:-1].replace(",", "\n").replace(";", "\n")
     print(jsonData)
+    return jsonData
 
 
 class Server(BaseHTTPRequestHandler):
@@ -41,7 +42,7 @@ class Server(BaseHTTPRequestHandler):
         # logging.info('Data is:\n{decoded_data}')
 
         decodedDataToMessage(decoded_data)
-        # sendMessage(decodedDataToMessage(decoded_data), token, bot_id)
+        sendMessage(decodedDataToMessage(decoded_data), token, bot_id)
 
         self._set_response()
         # self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
