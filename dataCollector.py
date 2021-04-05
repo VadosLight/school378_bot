@@ -8,7 +8,7 @@ import socket
 import psutil
 import platform
 from datetime import datetime
-from uuid import getnode as get_mac
+import uuid
 from speedtest import Speedtest
 inet = Speedtest()
 
@@ -45,22 +45,22 @@ class DataCollector:
 
     @staticmethod
     def getMac():
-        tmp = str(bin(get_mac()))[2:]
-        print(tmp)
-        tmp2 = []
+        network = psutil.net_if_addrs()
+        lanInfo = ""
 
-        # С конца строки по 8 бит записываем адрес
-        for i in range(len(tmp), 0, -8):
-            print(i)
-            if(i >= 8):
-                tmp2.append(str(hex(int(tmp[i-8: i], 2)))[2:])
-            else:
-                tmp2.append(str(hex(int(tmp[0: i], 2)))[2:])
+        try:
+            LAN = network["Ethernet"][0].address
+            lanInfo += f';MAC_LAN={LAN}'
+        except:
+            print()
 
-        # Разворачиваем массив тк заполняли его с конца. и формируем строку
-        tmp2 = ':'.join(tmp2[::-1])
+        try:
+            W_LAN = network["Беспроводная сеть"][0].address
+            lanInfo += f';MAC_WLAN={W_LAN}'
+        except:
+            print()
 
-        return tmp2
+        return lanInfo
 
     @staticmethod
     def osInfo():
