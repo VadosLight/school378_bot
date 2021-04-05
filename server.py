@@ -10,50 +10,44 @@ def sendMessage(msg, token, channel_id):
     # bot = telebot.TeleBot(config.token)
     # bot.send_message(config.channel_id, msg)
 
-def getToken_botId_from_postData(post_data):
-    json_data = post_data.decode('utf-8').replace('\\"', "")
-    json_data = json_data.split(",")
 
-    bot_id = json_data[len(json_data)-1].replace('}"', "").split(":")
-    bot_id = bot_id[1].replace(" ", "")
-    token = json_data[len(json_data)-2].split(":")
-    token = f'{token[1]}:{token[2]}'.replace(" ", "")
-    print(f"\n\n Токен = {token}\n Id бота = {bot_id}")
-    return token, bot_id
+def decodedDataToMessage(data):
+    # data["disks_info"] = data["disks_info"].replace()
+    jsonData = json.dumps(data)
+    jsonData = jsonData[1:-1].replace(",", "\n").replace(";", "\n")
+    print(jsonData)
 
 
-class S(BaseHTTPRequestHandler):
+class Server(BaseHTTPRequestHandler):
     def _set_response(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
 
-    def do_GET(self):
-        logging.info("GET request,\nPath: %s\nHeaders:\n%s\n",
-                     str(self.path), str(self.headers))
-        self._set_response()
-        self.wfile.write("GET request for {}".format(
-            self.path).encode('utf-8'))
-
     def do_POST(self):
-        # <--- Gets the size of data
+        # Получает размер данных и сами данные
         content_length = int(self.headers['Content-Length'])
-        # <--- Gets the data itself
         post_data = self.rfile.read(content_length)
-        token, bot_id = getToken_botId_from_postData(post_data)
 
-        decoded_data = post_data.decode('utf-8').replace('\\"', "").replace(',', '\n')
-        # Убираем токен и айди бота
-        decoded_data = decoded_data.replace(token, "***").replace(bot_id, "***") 
-        logging.info(" data is: %s", decoded_data)
+        # Преобразуем поломанный JSON в словарь
+        decoded_data = post_data.decode('utf-8').replace('\\', "")
+        decoded_data = json.loads(decoded_data[1:-1])
 
-        sendMessage(decoded_data, token, bot_id)
+        # Убираем токен и айди бота из данных, записываем их в переменные
+        token = decoded_data.pop("token")
+        bot_id = decoded_data.pop("bot_id")
+
+        # Пишем логи
+        # logging.info('Data is:\n{decoded_data}')
+
+        decodedDataToMessage(decoded_data)
+        # sendMessage(decodedDataToMessage(decoded_data), token, bot_id)
 
         self._set_response()
         # self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
 
 
-def run(server_class=HTTPServer, handler_class=S, port=8000):
+def run(server_class=HTTPServer, handler_class=Server, port=8000):
     logging.basicConfig(level=logging.INFO)
     server_address = ('', port)
 
