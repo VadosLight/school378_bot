@@ -11,12 +11,11 @@
 
 ### Инструкция
 
-1) Запустить server(py/exe) на сервере, на адрес которого смогут делать запрос клиенты. (Внешний ip или единая локальная сеть)
-2) Поместить на нужные ПК скрипт/утилиту (dataCollector.exe и Ярлык с параметрами) параметры вида "TOKEN" "BOT_ID" "SERVER_IP:PORT"
-    - (Windows) Поле Target ярлыка должно содержать %windir%\system32\cmd.exe /C start .\dataCollector.exe "TOKEN" "BOT_ID" "SERVER_IP:PORT"
-    - (Linux) Ярлык не требуется. Запускаем сам исполняемый файл с параметрами "TOKEN" "BOT_ID" "SERVER_IP:PORT"
-3) Добавить в планировщик задач ссылку на ЯРЛЫК (Windows) или Исполняемый файл (Linux)
-
+1. Запустить server(py/exe) на сервере, на адрес которого смогут делать запрос клиенты. (Внешний ip или единая локальная сеть)
+2. Поместить на нужные ПК скрипт/утилиту (dataCollector.exe и Ярлык с параметрами) параметры вида "TOKEN" "BOT_ID" "SERVER_IP:PORT"
+   - (Windows) Поле Target ярлыка должно содержать %windir%\system32\cmd.exe /C start .\dataCollector.exe "TOKEN" "BOT_ID" "SERVER_IP:PORT"
+   - (Linux) Ярлык не требуется. Запускаем сам исполняемый файл с параметрами "TOKEN" "BOT_ID" "SERVER_IP:PORT"
+3. Добавить в планировщик задач ссылку на ЯРЛЫК (Windows) или Исполняемый файл (Linux)
 
 ## Что почитать
 
@@ -33,8 +32,10 @@
 - https://www.tutorialspoint.com/How-to-convert-string-to-JSON-using-Python
 - https://docs.python.org/3/library/functions.html#dir
 - https://psutil.readthedocs.io/en/latest/#psutil.disk_partitions
+- https://stackoverflow.com/questions/3262603/accessing-cpu-temperature-in-python
 
 ---
+
 ## Библиотеки
 
-- pip install pyTelegramBotAPI requests auto-py-to-exe psutil speedtest
+- pip install pyTelegramBotAPI requests auto-py-to-exe psutil speedtest-cli ssd py-cpuinfo wmi

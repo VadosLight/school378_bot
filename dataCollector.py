@@ -3,17 +3,20 @@ import sys
 import requests
 import json
 import ssd
-
 import getpass
 import socket
 import psutil
 import platform
-from datetime import datetime
 import uuid
+import cpuinfo
+import wmi
+from datetime import datetime
 from speedtest import Speedtest
 inet = Speedtest()
 
 # Знак ";" служит как символ новой строки.
+# markupDict - словарь спецсимволов, которые будут заменены
+# markupDict = {'<celsius>':'°'}
 
 
 class Args:
@@ -36,13 +39,20 @@ class DataCollector:
         self.ip = socket.gethostbyname(socket.getfqdn())
         self.name = getpass.getuser()
         self.mac = self.getMac()
-        self.ost = self.osInfo()
+        self.system = self.osInfo()
         self.cpu = self.cpuInfo()
-        # self.download_MB_S = float(str(inet.download())[0:2] + "."  # Входящая скорость
-        #                       + str(round(inet.download(), 2))[1]) * 0.125
-        # self.uploads_MB_S = float(str(inet.upload())[0:2] + "."   # Исходящая скорость
-        #                      + str(round(inet.download(), 2))[1]) * 0.125
         self.disks_info = self.disksInfo(self)
+        self.network_speed = self.networkSpeed()
+
+    @staticmethod
+    def networkSpeed():
+        # Скорость загрузки
+        download_MB_S = float(str(inet.download())[0:2] + "."
+                              + str(round(inet.download(), 2))[1])
+        # Скорость отправки
+        uploads_MB_S = float(str(inet.upload())[0:2] + "."
+                             + str(round(inet.download(), 2))[1])
+        return f';Download = {download_MB_S} Mb/S;Upload = {uploads_MB_S} Mb/S'
 
     @staticmethod
     def getMac():
@@ -51,13 +61,13 @@ class DataCollector:
 
         try:
             LAN = network["Ethernet"][0].address
-            lanInfo += f';MAC_LAN={LAN}'
+            lanInfo += f';MAC_LAN = {LAN}'
         except:
             print()
 
         try:
             W_LAN = network["Беспроводная сеть"][0].address
-            lanInfo += f';MAC_WLAN={W_LAN}'
+            lanInfo += f';MAC_WLAN = {W_LAN}'
         except:
             print()
 
@@ -70,8 +80,17 @@ class DataCollector:
 
     @staticmethod
     def cpuInfo():
-        psutil.cpu_freq()
-        # print(psutil.cpu_stats())
+        cpuBrand = cpuinfo.get_cpu_info()["brand_raw"]
+
+        try:
+            w = wmi.WMI(namespace="root\wmi")
+            temp_info = round(w.MSAcpi_ThermalZoneTemperature()[
+                              0].CurrentTemperature / 10 - 273)
+        except:
+            temp_info = "Access_denied"
+
+        # print(f';{cpuBrand} ({temp_info}<celsius>C)')
+        return f';{cpuBrand} ({temp_info}<celsius>C)'
 
     @staticmethod
     def disksInfo(self):
@@ -89,10 +108,10 @@ class DataCollector:
                 type_drive = "Not defined"
 
             tmp += f';{disk_name}_{type_drive}_{self.diskCapacity(disk_name)}'
-            print(f';{disk_name}_{type_drive}_{self.diskCapacity(disk_name)}')
+            # print(f';{disk_name}_{type_drive}_{self.diskCapacity(disk_name)}')
         return tmp
 
-    # Вспомогательный метод для
+    # Вспомогательный метод для disksInfo
     @staticmethod
     def diskCapacity(disk):
         try:
@@ -109,9 +128,9 @@ class DataCollector:
 # Принимаем токен (строка) и id-бота (отрицательное число)
 # sys.argv[1] и sys.argv[2]
 # sys.argv[0] - это название файла
-# адрес сервера встроить в код или принимать аргументом
+# sys.argv[3] - адрес сервера
 if __name__ == "__main__":
-    # obj = DataCollector()#Убрать после тестов
+    # obj = DataCollector()  # Убрать после тестов
 
     if (len(sys.argv) == 4):
         args = Args(sys.argv[1], sys.argv[2])
@@ -122,7 +141,6 @@ if __name__ == "__main__":
             obj.token = sys.argv[1]
             obj.bot_id = sys.argv[2]
             x = json.dumps(obj.__dict__)
-            # Принимать ещё одним аргуменотм?
             requests.post(sys.argv[3], json=x)
         else:
             print("Incorrect arguments. Remember, TOKEN - ID - IP ...")
