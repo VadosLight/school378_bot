@@ -12,17 +12,16 @@ def sendMessage(msg, token, channel_id):
 
 
 def decodedDataToMessage(data):
-    # data["disks_info"] = data["disks_info"].replace()
     jsonData = json.dumps(data)
-    jsonData = jsonData[1:-1].replace(",", "\n").replace(";", "\n")
-    
-    markupDict = {'<celsius>':'°'}
+    jsonData = jsonData[1:-1].replace(",", "\n\n").replace(";", "\n")
+
+    markupDict = {'<celsius>': '°'}
 
     for key, val in markupDict.items():
         jsonData = jsonData.replace(key, val)
 
-    print(jsonData)
-    return jsonData
+    # print(jsonData)
+    return jsonData.replace('"', '')
 
 
 class Server(BaseHTTPRequestHandler):

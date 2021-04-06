@@ -15,7 +15,8 @@ from speedtest import Speedtest
 inet = Speedtest()
 
 # Знак ";" служит как символ новой строки.
-# <celsius> = °
+# markupDict - словарь спецсимволов, которые будут заменены
+# markupDict = {'<celsius>':'°'}
 
 
 class Args:
@@ -40,11 +41,16 @@ class DataCollector:
         self.mac = self.getMac()
         self.ost = self.osInfo()
         self.cpu = self.cpuInfo()
-        # self.download_MB_S = float(str(inet.download())[0:2] + "."  # Входящая скорость
-        #                       + str(round(inet.download(), 2))[1]) * 0.125
-        # self.uploads_MB_S = float(str(inet.upload())[0:2] + "."   # Исходящая скорость
-        #                      + str(round(inet.download(), 2))[1]) * 0.125
         self.disks_info = self.disksInfo(self)
+        self.network_speed = self.networkSpeed()
+
+    @staticmethod
+    def networkSpeed():
+        download_MB_S = float(str(inet.download())[0:2] + "."  # Входящая скорость
+                              + str(round(inet.download(), 2))[1])
+        uploads_MB_S = float(str(inet.upload())[0:2] + "."   # Исходящая скорость
+                             + str(round(inet.download(), 2))[1])
+        return f';Download = {download_MB_S} Mb/S;Upload = {uploads_MB_S} Mb/S'
 
     @staticmethod
     def getMac():
@@ -76,11 +82,12 @@ class DataCollector:
 
         try:
             w = wmi.WMI(namespace="root\wmi")
-            temp_info = round(w.MSAcpi_ThermalZoneTemperature()[0].CurrentTemperature / 10 -273)
+            temp_info = round(w.MSAcpi_ThermalZoneTemperature()[
+                              0].CurrentTemperature / 10 - 273)
         except:
             temp_info = "Access_denied"
 
-        print(f';{cpuBrand} ({temp_info}°C)')
+        # print(f';{cpuBrand} ({temp_info}<celsius>C)')
         return f';{cpuBrand} ({temp_info}<celsius>C)'
 
     @staticmethod
