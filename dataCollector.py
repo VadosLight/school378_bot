@@ -39,16 +39,18 @@ class DataCollector:
         self.ip = socket.gethostbyname(socket.getfqdn())
         self.name = getpass.getuser()
         self.mac = self.getMac()
-        self.ost = self.osInfo()
+        self.system = self.osInfo()
         self.cpu = self.cpuInfo()
         self.disks_info = self.disksInfo(self)
         self.network_speed = self.networkSpeed()
 
     @staticmethod
     def networkSpeed():
-        download_MB_S = float(str(inet.download())[0:2] + "."  # Входящая скорость
+        # Скорость загрузки
+        download_MB_S = float(str(inet.download())[0:2] + "."
                               + str(round(inet.download(), 2))[1])
-        uploads_MB_S = float(str(inet.upload())[0:2] + "."   # Исходящая скорость
+        # Скорость отправки
+        uploads_MB_S = float(str(inet.upload())[0:2] + "."
                              + str(round(inet.download(), 2))[1])
         return f';Download = {download_MB_S} Mb/S;Upload = {uploads_MB_S} Mb/S'
 
@@ -59,13 +61,13 @@ class DataCollector:
 
         try:
             LAN = network["Ethernet"][0].address
-            lanInfo += f';MAC_LAN={LAN}'
+            lanInfo += f';MAC_LAN = {LAN}'
         except:
             print()
 
         try:
             W_LAN = network["Беспроводная сеть"][0].address
-            lanInfo += f';MAC_WLAN={W_LAN}'
+            lanInfo += f';MAC_WLAN = {W_LAN}'
         except:
             print()
 
@@ -126,7 +128,7 @@ class DataCollector:
 # Принимаем токен (строка) и id-бота (отрицательное число)
 # sys.argv[1] и sys.argv[2]
 # sys.argv[0] - это название файла
-# адрес сервера встроить в код или принимать аргументом
+# sys.argv[3] - адрес сервера
 if __name__ == "__main__":
     # obj = DataCollector()  # Убрать после тестов
 
