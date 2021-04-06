@@ -37,4 +37,4 @@
 ---
 ## Библиотеки
 
-- pip install pyTelegramBotAPI requests auto-py-to-exe psutil speedtest-cli ssd
+- pip install pyTelegramBotAPI requests auto-py-to-exe psutil speedtest-cli ssd py-cpuinfo

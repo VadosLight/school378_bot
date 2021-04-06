@@ -3,17 +3,19 @@ import sys
 import requests
 import json
 import ssd
-
 import getpass
 import socket
 import psutil
 import platform
-from datetime import datetime
 import uuid
+import cpuinfo
+import wmi
+from datetime import datetime
 from speedtest import Speedtest
 inet = Speedtest()
 
 # Знак ";" служит как символ новой строки.
+# <celsius> = °
 
 
 class Args:
@@ -70,8 +72,16 @@ class DataCollector:
 
     @staticmethod
     def cpuInfo():
-        psutil.cpu_freq()
-        # print(psutil.cpu_stats())
+        cpuBrand = cpuinfo.get_cpu_info()["brand_raw"]
+
+        try:
+            w = wmi.WMI(namespace="root\wmi")
+            temp_info = round(w.MSAcpi_ThermalZoneTemperature()[0].CurrentTemperature / 10 -273)
+        except:
+            temp_info = "Access_denied"
+
+        print(f';{cpuBrand} ({temp_info}°C)')
+        return f';{cpuBrand} ({temp_info}<celsius>C)'
 
     @staticmethod
     def disksInfo(self):
@@ -89,10 +99,10 @@ class DataCollector:
                 type_drive = "Not defined"
 
             tmp += f';{disk_name}_{type_drive}_{self.diskCapacity(disk_name)}'
-            print(f';{disk_name}_{type_drive}_{self.diskCapacity(disk_name)}')
+            # print(f';{disk_name}_{type_drive}_{self.diskCapacity(disk_name)}')
         return tmp
 
-    # Вспомогательный метод для
+    # Вспомогательный метод для disksInfo
     @staticmethod
     def diskCapacity(disk):
         try:
@@ -111,7 +121,7 @@ class DataCollector:
 # sys.argv[0] - это название файла
 # адрес сервера встроить в код или принимать аргументом
 if __name__ == "__main__":
-    # obj = DataCollector()#Убрать после тестов
+    # obj = DataCollector()  # Убрать после тестов
 
     if (len(sys.argv) == 4):
         args = Args(sys.argv[1], sys.argv[2])
@@ -122,7 +132,6 @@ if __name__ == "__main__":
             obj.token = sys.argv[1]
             obj.bot_id = sys.argv[2]
             x = json.dumps(obj.__dict__)
-            # Принимать ещё одним аргуменотм?
             requests.post(sys.argv[3], json=x)
         else:
             print("Incorrect arguments. Remember, TOKEN - ID - IP ...")
